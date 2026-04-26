@@ -17,6 +17,8 @@ class AnalyticsController extends Controller
     public function createProduct(Request $request)
     {
         $product = new Product();
+        $product->product_id = rand(10001, 99999);
+        
         $product->product_name = $request->product_name;
         $product->product_price = $request->product_price;
         $product->category_id = $request->category_id;
@@ -39,8 +41,11 @@ class AnalyticsController extends Controller
         $product = Product::find($id);
         if (!$product) return response()->json(['error' => 'Not found'], 404);
 
+        Sale::where('product_id', $id)->delete();
+
         $product->delete();
-        return response()->json(['message' => 'Product deleted'], 200);
+        
+        return response()->json(['message' => 'Product and all associated sales deleted successfully'], 200);
     }
 
     public function getProductsWithCategories()
